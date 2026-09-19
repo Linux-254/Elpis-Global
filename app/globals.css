@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,88..100,400..700;1,88..100,400..700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap');
+
+:root {
+  /* Paper base */
+  --color-paper-50: #F4F1E9;
+  --color-paper-100: #EBE6DA;
+  --color-paper-200: #DED8C8;
+
+  /* Ink hierarchy */
+  --color-ink-900: #14140F;
+  --color-ink-700: #3A3A32;
+  --color-ink-500: #6B6A5E;
+  --color-ink-300: #9C9A8C;
+
+  /* Brand Blue */
+  --color-brand-blue-900: #0B2239;
+  --color-brand-blue-700: #143A5E;
+  --color-brand-blue-500: #2A6089;
+  --color-brand-blue-100: #D7E2EC;
+
+  /* Accent Gold */
+  --color-accent-gold-600: #8A6516;
+  --color-accent-gold-400: #C2992E;
+  --color-accent-gold-100: #F0E4C4;
+
+  /* Accent Green */
+  --color-accent-green-700: #1F4E3C;
+  --color-accent-green-400: #4C8A6C;
+  --color-accent-green-100: #DDE9E1;
+
+  /* Status Colors */
+  --color-status-danger-700: #7A2118;
+  --color-status-danger-100: #F5DFDB;
+  --color-status-warning-700: #7A5511;
+  --color-status-warning-100: #F7E9CC;
+
+  /* Overlay Scrim (The only permitted gradient) */
+  --color-overlay-scrim: linear-gradient(to top, rgba(11,34,57,0.85) 0%, rgba(11,34,57,0.45) 50%, rgba(11,34,57,0.1) 100%);
+
+  /* Radius Tokens */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-menu: 0 8px 24px -12px rgba(20,20,15,0.22);
+  --shadow-modal: 0 24px 64px -24px rgba(20,20,15,0.34);
+
+  /* Fonts */
+  --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+}
+
+@theme {
+  --color-paper-50: var(--color-paper-50);
+  --color-paper-100: var(--color-paper-100);
+  --color-paper-200: var(--color-paper-200);
+
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-700: var(--color-ink-700);
+  --color-ink-500: var(--color-ink-500);
+  --color-ink-300: var(--color-ink-300);
+
+  --color-brand-blue-900: var(--color-brand-blue-900);
+  --color-brand-blue-700: var(--color-brand-blue-700);
+  --color-brand-blue-500: var(--color-brand-blue-500);
+  --color-brand-blue-100: var(--color-brand-blue-100);
+
+  --color-accent-gold-600: var(--color-accent-gold-600);
+  --color-accent-gold-400: var(--color-accent-gold-400);
+  --color-accent-gold-100: var(--color-accent-gold-100);
+
+  --color-accent-green-700: var(--color-accent-green-700);
+  --color-accent-green-400: var(--color-accent-green-400);
+  --color-accent-green-100: var(--color-accent-green-100);
+
+  --color-status-danger-700: var(--color-status-danger-700);
+  --color-status-danger-100: var(--color-status-danger-100);
+  --color-status-warning-700: var(--color-status-warning-700);
+  --color-status-warning-100: var(--color-status-warning-100);
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+html {
+  background-color: var(--color-paper-50);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--color-accent-gold-100);
+  color: var(--color-ink-900);
+}
+
+/* Typography styles */
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "cv01" 1, "cv02" 1;
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.scrim-overlay {
+  background: var(--color-overlay-scrim);
+}
+
+/* Standard focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-accent-gold-600);
+  outline-offset: 2px;
+}
+
+.dark-surface :focus-visible {
+  outline: 2px solid var(--color-accent-gold-400);
+  outline-offset: 2px;
+}
+
+/* Hairlines */
+.border-hairline {
+  border-color: var(--color-paper-200);
+}
+
+.border-ink-hairline {
+  border-color: rgba(20, 20, 15, 0.15);
+}
+
+.border-paper-hairline {
+  border-color: rgba(244, 241, 233, 0.16);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

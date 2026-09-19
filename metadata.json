@@ -1,0 +1,6 @@
+{
+  "name": "Zoe Elpis Global School",
+  "description": "Zoe Elpis Global School equips individuals, entrepreneurs, leaders and changemakers with practical knowledge, skills and tools to discover purpose, develop leadership capacity, build value and create sustainable impact.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

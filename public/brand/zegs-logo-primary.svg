@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" width="280" height="48" fill="none">
+  <!-- Emblem on left -->
+  <g transform="translate(0, 0) scale(0.75)" fill="#0B2239">
+    <path d="M32 6C30.5 12 25 17 25 24C25 29 28.5 32.5 32 35C35.5 32.5 39 29 39 24C39 17 33.5 12 32 6Z"/>
+    <path d="M32 23C32.8 20 34.5 17.5 36 15.5C37.2 18.5 37.5 21.5 36.5 24.5C35.5 27.5 33.5 29.5 32 31C30.5 29.5 28.5 27.5 27.5 24.5C26.5 21.5 26.8 18.5 28 15.5C29.5 17.5 31.2 20 32 23Z" fill-opacity="0.4"/>
+    <path d="M30.5 36L29 54H35L33.5 36C33 36.2 32.5 36.3 32 36.3C31.5 36.3 31 36.2 30.5 36Z"/>
+    <path d="M27 38.5C21 37.5 13 40 8 45.5V56.5C14 51.5 21.5 50.5 27 52V38.5Z"/>
+    <path d="M37 38.5C43 37.5 51 40 56 45.5V56.5C50 51.5 42.5 50.5 37 52V38.5Z"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="56" y="20" font-family="Fraunces, serif" font-size="16" font-weight="600" letter-spacing="0.04em" fill="#0B2239">ZOE ELPIS</text>
+  <text x="56" y="36" font-family="Archivo, sans-serif" font-size="11" font-weight="700" letter-spacing="0.14em" fill="#143A5E">GLOBAL SCHOOL</text>
+</svg>
