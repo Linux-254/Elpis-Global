@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, ChevronRight, User, Shield } from 'lucide-react';
 import { dataStore } from '../../data/store';
+import { SEED_USERS } from '../../data/seed';
+
+const subscribe = (cb: () => void) => dataStore.subscribe(cb);
+const getUserSnapshot = () => dataStore.getCurrentUser();
+const getUserServerSnapshot = () => SEED_USERS[1];
 
 interface SiteHeaderProps {
   variant?: 'over-hero' | 'solid';
@@ -17,14 +22,13 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({ variant = 'solid' }) => 
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
   const [scrolled, setScrolled] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
+  const currentUser = useSyncExternalStore(subscribe, getUserSnapshot, getUserServerSnapshot);
 
   if (prevPathname !== pathname) {
     setPrevPathname(pathname);
     setMobileMenuOpen(false);
     setActiveDropdown(null);
   }
-
-  const currentUser = dataStore.getCurrentUser();
 
   const navRef = useRef<HTMLDivElement>(null);
 

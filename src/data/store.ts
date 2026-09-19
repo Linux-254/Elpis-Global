@@ -112,6 +112,7 @@ const initialDB: DBState = {
 
 class DataStore {
   private state: DBState;
+  private listeners: Set<() => void> = new Set();
 
   constructor() {
     this.state = initialDB;
@@ -140,6 +141,23 @@ class DataStore {
     }
   }
 
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private notify() {
+    this.listeners.forEach((listener) => {
+      try {
+        listener();
+      } catch (e) {
+        console.error('Listener error in DataStore:', e);
+      }
+    });
+  }
+
   private save() {
     if (typeof window !== 'undefined') {
       try {
@@ -148,6 +166,7 @@ class DataStore {
         console.warn('Storage quota or error:', e);
       }
     }
+    this.notify();
   }
 
   private recordAudit(action: string, entityType: string, entityId: string, details?: string) {
@@ -475,8 +494,12 @@ class DataStore {
     return sub;
   }
 
-  // Certificates
+  // Certificates & Registry
   getCertificates(): Certificate[] {
+    return this.state.certificates;
+  }
+
+  getAllCertificatesAdmin(): Certificate[] {
     return this.state.certificates;
   }
 
@@ -492,6 +515,47 @@ class DataStore {
     return this.getCertificateByCode(code);
   }
 
+  issueCertificate(data: {
+    userId: string;
+    holderName: string;
+    programId: string;
+    programName: string;
+    enrolmentId?: string;
+    code?: string;
+  }): Certificate {
+    const code = data.code || `ZEGS-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+    const cert: Certificate = {
+      id: 'cert-' + Math.random().toString(36).substring(2, 9),
+      code,
+      userId: data.userId,
+      holderName: data.holderName,
+      programId: data.programId,
+      programName: data.programName,
+      enrolmentId: data.enrolmentId || 'enr-manual',
+      issuedAt: new Date().toISOString(),
+      fileUrl: '/certificates/sample-cert.pdf'
+    };
+    this.state.certificates.unshift(cert);
+    this.recordAudit('ISSUE_CERTIFICATE', 'Certificate', cert.id, `Issued certificate ${code} to ${data.holderName}`);
+    this.save();
+    return cert;
+  }
+
+  revokeCertificate(id: string, reason?: string): Certificate | undefined {
+    const cert = this.state.certificates.find(c => c.id === id);
+    if (!cert) return undefined;
+    cert.revokedAt = new Date().toISOString();
+    this.recordAudit('REVOKE_CERTIFICATE', 'Certificate', id, `Revoked cert ${cert.code}. Reason: ${reason || 'Administrative action'}`);
+    this.save();
+    return cert;
+  }
+
+  deleteCertificate(id: string) {
+    this.state.certificates = this.state.certificates.filter(c => c.id !== id);
+    this.recordAudit('DELETE_CERTIFICATE', 'Certificate', id, 'Deleted certificate record');
+    this.save();
+  }
+
   // Events
   getEvents(filter?: 'upcoming' | 'past' | 'all'): SchoolEvent[] {
     const now = new Date().toISOString();
@@ -504,8 +568,55 @@ class DataStore {
     return events.sort((a, b) => (filter === 'past' ? b.startsAt.localeCompare(a.startsAt) : a.startsAt.localeCompare(b.startsAt)));
   }
 
+  getAllEventsAdmin(): SchoolEvent[] {
+    return this.state.events;
+  }
+
   getEventBySlug(slug: string): SchoolEvent | undefined {
     return this.state.events.find(e => e.slug === slug);
+  }
+
+  saveEvent(event: Partial<SchoolEvent>): SchoolEvent {
+    if (event.id) {
+      const idx = this.state.events.findIndex(e => e.id === event.id);
+      if (idx !== -1) {
+        this.state.events[idx] = { ...this.state.events[idx], ...event } as SchoolEvent;
+        this.recordAudit('UPDATE_EVENT', 'Event', event.id, `Updated event ${event.title}`);
+        this.save();
+        return this.state.events[idx];
+      }
+    }
+    const newEvent: SchoolEvent = {
+      id: 'evt-' + Math.random().toString(36).substring(2, 9),
+      slug: event.slug || (event.title ? event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'new-event'),
+      title: event.title || 'Masterclass',
+      summary: event.summary || '',
+      description: event.description || '',
+      category: event.category || 'Masterclass',
+      deliveryMode: event.deliveryMode || 'online',
+      startsAt: event.startsAt || new Date(Date.now() + 86400000 * 7).toISOString(),
+      endsAt: event.endsAt || new Date(Date.now() + 86400000 * 7 + 7200000).toISOString(),
+      timezone: 'Africa/Kampala (EAT)',
+      locationName: event.locationName || 'Live Online Campus (Zoom / Google Meet)',
+      joinUrl: event.joinUrl || 'https://meet.google.com/zegs-live-session',
+      registrationStatus: event.registrationStatus || 'open',
+      waitlistEnabled: true,
+      registeredCount: 0,
+      capacity: event.capacity || 100,
+      status: event.status || 'published',
+      heroImageUrl: event.heroImageUrl || 'https://images.unsplash.com/photo-1544531585-9847b68c8c86?q=80&w=800&auto=format&fit=crop',
+      ...event
+    } as SchoolEvent;
+    this.state.events.unshift(newEvent);
+    this.recordAudit('CREATE_EVENT', 'Event', newEvent.id, `Created event ${newEvent.title}`);
+    this.save();
+    return newEvent;
+  }
+
+  deleteEvent(id: string) {
+    this.state.events = this.state.events.filter(e => e.id !== id);
+    this.recordAudit('DELETE_EVENT', 'Event', id, 'Deleted event');
+    this.save();
   }
 
   registerForEvent(eventId: string, data: { fullName: string; email: string; phone?: string; deliveryPreference: 'online' | 'physical' | 'blended' }): string {
@@ -530,13 +641,109 @@ class DataStore {
     return list.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   }
 
+  getAllArticlesAdmin(): Article[] {
+    return this.state.articles;
+  }
+
   getArticleBySlug(slug: string): Article | undefined {
     return this.state.articles.find(a => a.slug === slug);
+  }
+
+  saveArticle(article: Partial<Article>): Article {
+    if (article.id) {
+      const idx = this.state.articles.findIndex(a => a.id === article.id);
+      if (idx !== -1) {
+        this.state.articles[idx] = { ...this.state.articles[idx], ...article } as Article;
+        this.recordAudit('UPDATE_ARTICLE', 'Article', article.id, `Updated article ${article.title}`);
+        this.save();
+        return this.state.articles[idx];
+      }
+    }
+    const newArt: Article = {
+      id: 'art-' + Math.random().toString(36).substring(2, 9),
+      slug: article.slug || (article.title ? article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'new-article'),
+      title: article.title || 'New Insight Article',
+      standfirst: article.standfirst || '',
+      category: article.category || 'Leadership',
+      authorName: article.authorName || 'ZEGS Editorial Board',
+      authorRole: article.authorRole || 'Faculty Fellow',
+      bodyContent: article.bodyContent || 'Article body text.',
+      readMinutes: article.readMinutes || 5,
+      status: article.status || 'published',
+      publishedAt: new Date().toISOString(),
+      heroImageUrl: article.heroImageUrl || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop',
+      ...article
+    } as Article;
+    this.state.articles.unshift(newArt);
+    this.recordAudit('CREATE_ARTICLE', 'Article', newArt.id, `Created article ${newArt.title}`);
+    this.save();
+    return newArt;
+  }
+
+  deleteArticle(id: string) {
+    this.state.articles = this.state.articles.filter(a => a.id !== id);
+    this.recordAudit('DELETE_ARTICLE', 'Article', id, 'Deleted article');
+    this.save();
   }
 
   // Mentorship
   getMentors(): Mentor[] {
     return this.state.mentors.filter(m => m.status === 'published');
+  }
+
+  getAllMentorsAdmin(): Mentor[] {
+    return this.state.mentors;
+  }
+
+  saveMentor(mentor: Partial<Mentor>): Mentor {
+    if (mentor.id) {
+      const idx = this.state.mentors.findIndex(m => m.id === mentor.id);
+      if (idx !== -1) {
+        this.state.mentors[idx] = { ...this.state.mentors[idx], ...mentor } as Mentor;
+        this.recordAudit('UPDATE_MENTOR', 'Mentor', mentor.id, `Updated mentor ${mentor.fullName}`);
+        this.save();
+        return this.state.mentors[idx];
+      }
+    }
+    const newMentor: Mentor = {
+      id: 'men-' + Math.random().toString(36).substring(2, 9),
+      fullName: mentor.fullName || 'New Mentor',
+      role: mentor.role || 'Executive Fellow',
+      organisation: mentor.organisation || 'ZEGS Faculty Network',
+      biography: mentor.biography || '',
+      expertise: mentor.expertise || ['Leadership', 'Purpose Discovery'],
+      languages: mentor.languages || ['English', 'Luganda', 'Swahili'],
+      mentoringFormat: mentor.mentoringFormat || ['1-on-1 Virtual Advisory', 'Executive Office Hours'],
+      availability: mentor.availability || 'open',
+      consentGiven: true,
+      status: mentor.status || 'published',
+      photoUrl: mentor.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+      ...mentor
+    } as Mentor;
+    this.state.mentors.unshift(newMentor);
+    this.recordAudit('CREATE_MENTOR', 'Mentor', newMentor.id, `Added mentor ${newMentor.fullName}`);
+    this.save();
+    return newMentor;
+  }
+
+  deleteMentor(id: string) {
+    this.state.mentors = this.state.mentors.filter(m => m.id !== id);
+    this.recordAudit('DELETE_MENTOR', 'Mentor', id, 'Deleted mentor');
+    this.save();
+  }
+
+  getAllMentorshipRequestsAdmin(): MentorshipRequest[] {
+    return this.state.mentorshipRequests;
+  }
+
+  updateMentorshipRequestStatus(id: string, status: MentorshipRequest['status'], matchedMentorId?: string): MentorshipRequest | undefined {
+    const req = this.state.mentorshipRequests.find(r => r.id === id);
+    if (!req) return undefined;
+    req.status = status;
+    if (matchedMentorId) req.matchedMentorId = matchedMentorId;
+    this.recordAudit('UPDATE_MENTORSHIP_REQUEST', 'MentorshipRequest', id, `Status set to ${status}`);
+    this.save();
+    return req;
   }
 
   requestMentorship(data: Omit<MentorshipRequest, 'id' | 'status' | 'createdAt'>): MentorshipRequest {
@@ -552,15 +759,6 @@ class DataStore {
     return req;
   }
 
-  // Impact
-  getImpactIndicators(): ImpactIndicator[] {
-    return this.state.impactIndicators.filter(i => i.status === 'published');
-  }
-
-  getImpactStories(): ImpactStory[] {
-    return this.state.impactStories.filter(s => s.status === 'published' && s.consentGiven);
-  }
-
   // FAQs
   getFaqs(scope?: 'global' | 'program' | 'admissions'): Faq[] {
     let list = [...this.state.faqs].filter(f => f.status === 'published');
@@ -570,7 +768,64 @@ class DataStore {
     return list.sort((a, b) => a.order - b.order);
   }
 
-  // Contact Enquiry
+  getAllFaqsAdmin(): Faq[] {
+    return this.state.faqs;
+  }
+
+  saveFaq(faq: Partial<Faq>): Faq {
+    if (faq.id) {
+      const idx = this.state.faqs.findIndex(f => f.id === faq.id);
+      if (idx !== -1) {
+        this.state.faqs[idx] = { ...this.state.faqs[idx], ...faq } as Faq;
+        this.recordAudit('UPDATE_FAQ', 'Faq', faq.id, 'Updated FAQ entry');
+        this.save();
+        return this.state.faqs[idx];
+      }
+    }
+    const newFaq: Faq = {
+      id: 'faq-' + Math.random().toString(36).substring(2, 9),
+      question: faq.question || 'New Question?',
+      answer: faq.answer || 'Answer text.',
+      scope: faq.scope || 'global',
+      order: faq.order || this.state.faqs.length + 1,
+      status: faq.status || 'published',
+      ...faq
+    } as Faq;
+    this.state.faqs.push(newFaq);
+    this.recordAudit('CREATE_FAQ', 'Faq', newFaq.id, 'Created FAQ');
+    this.save();
+    return newFaq;
+  }
+
+  deleteFaq(id: string) {
+    this.state.faqs = this.state.faqs.filter(f => f.id !== id);
+    this.recordAudit('DELETE_FAQ', 'Faq', id, 'Deleted FAQ');
+    this.save();
+  }
+
+  // Impact
+  getImpactIndicators(): ImpactIndicator[] {
+    return this.state.impactIndicators.filter(i => i.status === 'published');
+  }
+
+  getImpactStories(): ImpactStory[] {
+    return this.state.impactStories.filter(s => s.status === 'published' && s.consentGiven);
+  }
+
+  // Contact Enquiries
+  getEnquiries(): ContactEnquiry[] {
+    return this.state.enquiries;
+  }
+
+  updateEnquiryStatus(id: string, status: ContactEnquiry['status']): ContactEnquiry | undefined {
+    const enq = this.state.enquiries.find(e => e.id === id);
+    if (!enq) return undefined;
+    enq.status = status;
+    this.recordAudit('UPDATE_ENQUIRY', 'ContactEnquiry', id, `Status changed to ${status}`);
+    this.save();
+    return enq;
+  }
+
   submitEnquiry(data: Omit<ContactEnquiry, 'id' | 'status' | 'createdAt'>): ContactEnquiry {
     const enq: ContactEnquiry = {
       ...data,
@@ -590,10 +845,85 @@ class DataStore {
   }
 
   updateSettings(updates: Partial<SiteSettings>): SiteSettings {
-    this.state.settings = { ...this.state.settings, ...updates };
+    this.state.settings = {
+      ...this.state.settings,
+      ...updates,
+      socials: {
+        ...this.state.settings.socials,
+        ...(updates.socials || {})
+      }
+    };
     this.recordAudit('UPDATE_SETTINGS', 'SiteSettings', 'global', 'Updated site configuration');
     this.save();
     return this.state.settings;
+  }
+
+  // User Management
+  getUsers(): User[] {
+    return this.state.users;
+  }
+
+  saveUser(user: Partial<User>): User {
+    if (user.id) {
+      const idx = this.state.users.findIndex(u => u.id === user.id);
+      if (idx !== -1) {
+        this.state.users[idx] = { ...this.state.users[idx], ...user, updatedAt: new Date().toISOString() } as User;
+        this.recordAudit('UPDATE_USER', 'User', user.id, `Updated user ${user.email}`);
+        this.save();
+        return this.state.users[idx];
+      }
+    }
+    const newUser: User = {
+      id: 'usr-' + Math.random().toString(36).substring(2, 9),
+      email: user.email || `user-${Date.now()}@zegs.ac.ug`,
+      fullName: user.fullName || 'New User',
+      role: user.role || 'student',
+      status: user.status || 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ...user
+    } as User;
+    this.state.users.push(newUser);
+    this.recordAudit('CREATE_USER', 'User', newUser.id, `Created user ${newUser.email}`);
+    this.save();
+    return newUser;
+  }
+
+  // Enrolments (Admin)
+  getAllEnrolmentsAdmin(): Enrolment[] {
+    return this.state.enrolments.map(e => ({
+      ...e,
+      program: this.getProgramById(e.programId)
+    }));
+  }
+
+  // System Stats
+  getDashboardStats() {
+    const totalPrograms = this.state.programs.length;
+    const publishedPrograms = this.state.programs.filter(p => p.status === 'published').length;
+    const totalApplications = this.state.applications.length;
+    const pendingApplications = this.state.applications.filter(a => a.status === 'submitted' || a.status === 'under_review').length;
+    const totalEnrolments = this.state.enrolments.length;
+    const totalCertificates = this.state.certificates.length;
+    const totalEvents = this.state.events.length;
+    const totalMentors = this.state.mentors.length;
+    const totalArticles = this.state.articles.length;
+    const totalEnquiries = this.state.enquiries.length;
+    const newEnquiries = this.state.enquiries.filter(e => e.status === 'new').length;
+
+    return {
+      totalPrograms,
+      publishedPrograms,
+      totalApplications,
+      pendingApplications,
+      totalEnrolments,
+      totalCertificates,
+      totalEvents,
+      totalMentors,
+      totalArticles,
+      totalEnquiries,
+      newEnquiries
+    };
   }
 
   // Audit Logs
@@ -612,6 +942,13 @@ class DataStore {
       return this.state.resources.filter(r => r.programId === programId || r.visibility === 'public');
     }
     return this.state.resources;
+  }
+
+  // Reset database to default seeds
+  resetToDefaults() {
+    this.state = { ...initialDB };
+    this.save();
+    this.recordAudit('RESET_DATABASE', 'System', 'system', 'Database reset to factory seeds');
   }
 }
 

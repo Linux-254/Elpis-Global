@@ -15,17 +15,11 @@ export default function EventDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  const [event, setEvent] = useState<EventItem | null>(null);
+  const event = slug ? dataStore.getEventBySlug(slug) : null;
   const [showRegModal, setShowRegModal] = useState(false);
   const [regForm, setRegForm] = useState({ fullName: '', email: '', phone: '', organisation: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
-
-  useEffect(() => {
-    if (!slug) return;
-    const found = dataStore.getEventBySlug(slug);
-    if (found) setEvent(found);
-  }, [slug]);
 
   if (!slug) return null;
   if (!event) {

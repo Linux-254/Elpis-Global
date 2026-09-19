@@ -39,30 +39,26 @@ function ApplyPageContent() {
   const searchParams = useSearchParams();
   const initialProgramId = searchParams?.get('program') || '';
 
-  const [draft, setDraft] = useState<ApplicationDraft>(INITIAL_DRAFT);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [draft, setDraft] = useState<ApplicationDraft>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (saved) {
+          return { ...INITIAL_DRAFT, ...JSON.parse(saved) };
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return initialProgramId ? { ...INITIAL_DRAFT, programId: initialProgramId } : INITIAL_DRAFT;
+  });
+  const [isLoaded, setIsLoaded] = useState(true);
   const [saveStatus, setSaveStatus] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const programs = useMemo(() => dataStore.getPrograms(), []);
   const schools = useMemo(() => dataStore.getSchools(), []);
-
-  // Load draft on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(DRAFT_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setDraft({ ...INITIAL_DRAFT, ...parsed });
-      } else if (initialProgramId) {
-        setDraft((prev) => ({ ...prev, programId: initialProgramId }));
-      }
-    } catch {
-      // ignore parse errors
-    }
-    setIsLoaded(true);
-  }, [initialProgramId]);
 
   // Auto-save draft
   const saveDraft = (updated: ApplicationDraft) => {
@@ -458,9 +454,9 @@ function ApplyPageContent() {
                         >
                           <option value="High School / UACE">High School / UACE</option>
                           <option value="Diploma / Associate">Diploma / Associate Degree</option>
-                          <option value="Bachelor's Degree">Bachelor's Degree</option>
+                          <option value="Bachelor's Degree">Bachelor&apos;s Degree</option>
                           <option value="Postgraduate Diploma">Postgraduate Diploma</option>
-                          <option value="Master's Degree">Master's Degree</option>
+                          <option value="Master's Degree">Master&apos;s Degree</option>
                           <option value="Doctorate / PhD">Doctorate / PhD</option>
                           <option value="Self-Taught / Practitioner">Self-Taught / Practitioner</option>
                         </select>
@@ -701,7 +697,7 @@ function ApplyPageContent() {
                         className="mt-0.5 rounded-[2px] accent-[var(--color-brand-blue-900)]"
                       />
                       <span className="text-xs text-[var(--color-ink-900)] leading-relaxed">
-                        <strong>ZEGS Honor & Academic Integrity Code:</strong> I certify that all information submitted is true and authored personally by me. I agree to uphold the school's standards of ethical leadership, intellectual rigor, and respectful community conduct throughout the program.
+                        <strong>ZEGS Honor & Academic Integrity Code:</strong> I certify that all information submitted is true and authored personally by me. I agree to uphold the school&apos;s standards of ethical leadership, intellectual rigor, and respectful community conduct throughout the program.
                       </span>
                     </label>
                     {errors.agreedToTerms && (

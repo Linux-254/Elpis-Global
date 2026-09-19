@@ -15,13 +15,7 @@ export default function ArticleDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  const [article, setArticle] = useState<Article | null>(null);
-
-  useEffect(() => {
-    if (!slug) return;
-    const found = dataStore.getArticleBySlug(slug);
-    if (found) setArticle(found);
-  }, [slug]);
+  const article = slug ? dataStore.getArticleBySlug(slug) : null;
 
   if (!slug) return null;
   if (!article) {

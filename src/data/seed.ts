@@ -656,16 +656,25 @@ export const SEED_FAQS: Faq[] = [
 
 export const SEED_SETTINGS: SiteSettings = {
   contactEmail: "admissions@zegs.ac.ug",
-  contactPhone: "+256 700 000 000",
-  officeLocation: "Kampala, Uganda & Nairobi, Kenya (Regional Hubs)",
-  officeHours: "Monday - Friday: 8:30 AM - 5:00 PM EAT",
+  contactPhone: "+256 700 892 411 / +254 712 345 678",
+  officeLocation: "Global Digital Campus (Regional Hubs: Kampala, Uganda & Nairobi, Kenya)",
+  officeHours: "Monday - Friday: 8:00 AM - 6:00 PM EAT (Online Support 24/7)",
+  heroBgImageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop",
+  announcementText: "✨ Applications now open for the Upcoming 2026 Online Cohort. Flexible tuition payment plans available.",
+  announcementEnabled: true,
   socials: {
-    linkedin: "https://linkedin.com/company/zoe-elpis-global-school",
-    twitter: "https://twitter.com/zoeelpis"
+    linkedin: "https://linkedin.com/school/zoe-elpis-global-school",
+    twitter: "https://twitter.com/zoeelpis",
+    youtube: "https://youtube.com/@zoeelpisglobalschool",
+    facebook: "https://facebook.com/zoeelpisglobalschool",
+    instagram: "https://instagram.com/zoeelpisglobalschool",
+    whatsapp: "https://wa.me/256700892411",
+    tiktok: "https://tiktok.com/@zoeelpis"
   },
   intakeActive: true,
-  paymentProvider: "M-Pesa / Bank Transfer",
-  sisterOrgNote: "AgapeElpis Teen Moms Support Center Uganda (Sister Community Empowerment Initiative)"
+  paymentProvider: "M-Pesa / MTN MoMo / Airtel Money / Direct Bank Wire / Visa",
+  sisterOrgNote: "AgapeElpis Teen Moms Support Center Uganda (Sister Community Empowerment Initiative)",
+  onlinePlatformNotice: "100% Online Global Academy with live interactive masterclasses, peer forums, faculty office hours, and lifelong cohort alumni networks."
 };
 
 export const SEED_USERS: User[] = [

@@ -1,15 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { BRAND_STRINGS } from '../../content/strings';
 import { dataStore } from '../../data/store';
+import { SEED_SETTINGS } from '../../data/seed';
+
+const subscribe = (cb: () => void) => dataStore.subscribe(cb);
+const getSettingsSnapshot = () => dataStore.getSettings();
+const getSettingsServerSnapshot = () => SEED_SETTINGS;
 
 export const SiteFooter: React.FC = () => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
-  const settings = dataStore.getSettings();
+  const settings = useSyncExternalStore(subscribe, getSettingsSnapshot, getSettingsServerSnapshot);
 
   const handleNewsletter = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +57,85 @@ export const SiteFooter: React.FC = () => {
 
             <div className="text-xs font-semibold tracking-wider text-[var(--color-accent-gold-400)]">
               {BRAND_STRINGS.tagline}
+            </div>
+
+            {/* Social Media Links */}
+            <div className="pt-2">
+              <span className="text-[11px] uppercase tracking-wider text-[var(--color-brand-blue-100)] font-semibold block mb-2">
+                Official Channels
+              </span>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {settings.socials.linkedin && (
+                  <a
+                    href={settings.socials.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    LinkedIn
+                  </a>
+                )}
+                {settings.socials.twitter && (
+                  <a
+                    href={settings.socials.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    Twitter / X
+                  </a>
+                )}
+                {settings.socials.youtube && (
+                  <a
+                    href={settings.socials.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    YouTube
+                  </a>
+                )}
+                {settings.socials.facebook && (
+                  <a
+                    href={settings.socials.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    Facebook
+                  </a>
+                )}
+                {settings.socials.instagram && (
+                  <a
+                    href={settings.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {settings.socials.whatsapp && (
+                  <a
+                    href={settings.socials.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-[#25D366]/20 hover:bg-[#25D366] hover:text-white rounded-[2px] transition-colors"
+                  >
+                    WhatsApp
+                  </a>
+                )}
+                {settings.socials.tiktok && (
+                  <a
+                    href={settings.socials.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                  >
+                    TikTok
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 

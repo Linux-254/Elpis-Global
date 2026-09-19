@@ -513,13 +513,20 @@ export interface SiteSettings {
   contactPhone: string;
   officeLocation: string;
   officeHours: string;
+  heroBgImageUrl?: string;
+  announcementText?: string;
+  announcementEnabled?: boolean;
   socials: {
     linkedin?: string;
     twitter?: string;
     youtube?: string;
     facebook?: string;
+    instagram?: string;
+    whatsapp?: string;
+    tiktok?: string;
   };
   intakeActive: boolean;
   paymentProvider: string;
   sisterOrgNote: string;
+  onlinePlatformNotice?: string;
 }

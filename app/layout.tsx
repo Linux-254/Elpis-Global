@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { MobileBottomNav } from '../src/components/primitives/MobileBottomNav';
 
 export const metadata: Metadata = {
   title: {
@@ -67,8 +68,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-[var(--color-paper-50)] text-[var(--color-ink-900)] font-sans antialiased" suppressHydrationWarning>
+      <body className="min-h-screen flex flex-col bg-[var(--color-paper-50)] text-[var(--color-ink-900)] font-sans antialiased pb-16 lg:pb-0" suppressHydrationWarning>
         {children}
+        <MobileBottomNav />
       </body>
     </html>
   );

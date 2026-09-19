@@ -14,13 +14,7 @@ export default function ApplicationConfirmationPage() {
   const params = useParams();
   const refNum = params?.reference as string;
 
-  const [application, setApplication] = useState<Application | null>(null);
-
-  useEffect(() => {
-    if (!refNum) return;
-    const found = dataStore.getApplicationByReference(refNum);
-    if (found) setApplication(found);
-  }, [refNum]);
+  const application: Application | null = refNum ? dataStore.getApplicationByReference(refNum) || null : null;
 
   if (!refNum) return null;
 
