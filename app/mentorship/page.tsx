@@ -8,7 +8,18 @@ import { Breadcrumbs } from '../../src/components/primitives/Breadcrumbs';
 import { SectionHeading } from '../../src/components/primitives/SectionHeading';
 import { dataStore } from '../../src/data/store';
 import { Mentor } from '../../src/domain/types';
-import { CheckCircle2, User, Mail, MessageSquare } from 'lucide-react';
+import {
+  CheckCircle2,
+  User,
+  Mail,
+  MessageSquare,
+  Globe,
+  Linkedin,
+  ExternalLink,
+  FileText,
+  Share2,
+  ArrowRight
+} from 'lucide-react';
 
 export default function MentorshipPage() {
   const mentors = dataStore.getMentors();
@@ -111,15 +122,85 @@ export default function MentorshipPage() {
                       <div className="text-xs font-semibold text-[var(--color-accent-gold-600)] uppercase tracking-wider mb-1">
                         {m.organisation}
                       </div>
-                      <h3 className="font-display text-2xl text-[var(--color-ink-900)] mb-1">
-                        {m.fullName}
-                      </h3>
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h3 className="font-display text-2xl text-[var(--color-ink-900)]">
+                          <Link href={`/mentorship/${m.id}`} className="hover:text-[var(--color-brand-blue-800)] transition-colors">
+                            {m.fullName}
+                          </Link>
+                        </h3>
+
+                        {/* Social Profile Badges */}
+                        <div className="flex items-center gap-1.5 shrink-0 pt-1">
+                          {m.linkedinUrl && (
+                            <a
+                              href={m.linkedinUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`${m.fullName} on LinkedIn`}
+                              title="LinkedIn Profile"
+                              className="p-1 text-[var(--color-ink-600)] hover:text-[#0A66C2] hover:bg-blue-50 rounded transition-colors"
+                            >
+                              <Linkedin size={15} />
+                            </a>
+                          )}
+                          {m.websiteUrl && (
+                            <a
+                              href={m.websiteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`${m.fullName} Website`}
+                              title="Personal Website"
+                              className="p-1 text-[var(--color-ink-600)] hover:text-[var(--color-accent-gold-600)] hover:bg-amber-50 rounded transition-colors"
+                            >
+                              <Globe size={15} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
                       <p className="text-xs font-medium text-[var(--color-brand-blue-700)] mb-3">
                         {m.role}
                       </p>
                       <p className="text-xs text-[var(--color-ink-700)] leading-relaxed mb-4">
                         {m.biography}
                       </p>
+
+                      {/* Featured Articles & Social Writings */}
+                      {m.socialLinks && m.socialLinks.length > 0 && (
+                        <div className="mb-4 pt-3 border-t border-[var(--color-paper-200)]">
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--color-ink-900)] mb-2">
+                            <span className="flex items-center gap-1 text-[var(--color-ink-800)]">
+                              <FileText size={12} className="text-[var(--color-brand-blue-800)]" />
+                              <span>Featured Articles & Publications</span>
+                            </span>
+                            <span className="text-[10px] text-[var(--color-ink-500)]">({m.socialLinks.length})</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {m.socialLinks.slice(0, 2).map((link, idx) => (
+                              <a
+                                key={link.id || idx}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex items-center justify-between p-2 bg-[var(--color-paper-50)] hover:bg-white border border-[var(--color-paper-200)] hover:border-[var(--color-brand-blue-300)] rounded-[2px] transition-all text-xs"
+                              >
+                                <span className="font-medium text-[var(--color-ink-900)] group-hover:text-[var(--color-brand-blue-800)] truncate pr-2">
+                                  {link.title}
+                                </span>
+                                <ExternalLink size={12} className="text-[var(--color-ink-400)] group-hover:text-[var(--color-brand-blue-800)] shrink-0" />
+                              </a>
+                            ))}
+                            {m.socialLinks.length > 2 && (
+                              <Link
+                                href={`/mentorship/${m.id}`}
+                                className="inline-block text-[11px] font-medium text-[var(--color-brand-blue-800)] hover:underline pt-0.5"
+                              >
+                                + View {m.socialLinks.length - 2} more publications &rarr;
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="pt-4 border-t border-[var(--color-paper-200)]">
@@ -131,15 +212,25 @@ export default function MentorshipPage() {
                         ))}
                       </div>
 
-                      <button
-                        onClick={() => {
-                          setSelectedMentor(m);
-                          setInquirySent(false);
-                        }}
-                        className="w-full py-2 text-center text-xs font-semibold bg-[var(--color-brand-blue-900)] text-[var(--color-paper-50)] hover:bg-[var(--color-brand-blue-700)] rounded-[2px] transition-colors"
-                      >
-                        Request Advisory Consultation
-                      </button>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Link
+                          href={`/mentorship/${m.id}`}
+                          className="py-2 text-center text-xs font-semibold bg-[var(--color-paper-200)] hover:bg-[var(--color-paper-300)] text-[var(--color-ink-900)] rounded-[2px] transition-colors flex items-center justify-center gap-1"
+                        >
+                          <span>Full Profile</span>
+                          <ArrowRight size={12} />
+                        </Link>
+
+                        <button
+                          onClick={() => {
+                            setSelectedMentor(m);
+                            setInquirySent(false);
+                          }}
+                          className="py-2 text-center text-xs font-semibold bg-[var(--color-brand-blue-900)] text-[var(--color-paper-50)] hover:bg-[var(--color-brand-blue-700)] rounded-[2px] transition-colors"
+                        >
+                          Book Advisory
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,11 +263,58 @@ export default function MentorshipPage() {
               ) : (
                 <div>
                   <div className="flex items-center justify-between mb-4 pb-2 border-b border-[var(--color-paper-200)]">
-                    <h3 className="font-display text-xl text-[var(--color-ink-900)]">
-                      Advisory Request • {selectedMentor.fullName}
-                    </h3>
-                    <button onClick={() => setSelectedMentor(null)} className="text-xs font-mono">✕ Close</button>
+                    <div>
+                      <h3 className="font-display text-xl text-[var(--color-ink-900)]">
+                        Advisory Request • {selectedMentor.fullName}
+                      </h3>
+                      <p className="text-[11px] text-[var(--color-brand-blue-800)] font-medium">
+                        {selectedMentor.role} • {selectedMentor.organisation}
+                      </p>
+                    </div>
+                    <button onClick={() => setSelectedMentor(null)} className="text-xs font-mono p-1 text-[var(--color-ink-600)] hover:text-black">✕ Close</button>
                   </div>
+
+                  {/* Social Profile Badges & Articles notice */}
+                  {(selectedMentor.linkedinUrl || selectedMentor.websiteUrl || (selectedMentor.socialLinks && selectedMentor.socialLinks.length > 0)) && (
+                    <div className="mb-4 p-2.5 bg-[var(--color-paper-100)] border border-[var(--color-paper-200)] rounded-[2px] flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-semibold text-[var(--color-ink-800)]">Channels:</span>
+                        {selectedMentor.linkedinUrl && (
+                          <a
+                            href={selectedMentor.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] text-[#0A66C2] hover:underline font-medium"
+                          >
+                            <Linkedin size={12} />
+                            <span>LinkedIn</span>
+                          </a>
+                        )}
+                        {selectedMentor.websiteUrl && (
+                          <a
+                            href={selectedMentor.websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[11px] text-[var(--color-accent-gold-600)] hover:underline font-medium"
+                          >
+                            <Globe size={12} />
+                            <span>Website</span>
+                          </a>
+                        )}
+                      </div>
+
+                      {selectedMentor.socialLinks && selectedMentor.socialLinks.length > 0 && (
+                        <Link
+                          href={`/mentorship/${selectedMentor.id}`}
+                          target="_blank"
+                          className="text-[11px] text-[var(--color-brand-blue-800)] hover:underline font-medium flex items-center gap-1"
+                        >
+                          <FileText size={11} />
+                          <span>{selectedMentor.socialLinks.length} Articles</span>
+                        </Link>
+                      )}
+                    </div>
+                  )}
 
                   <form onSubmit={handleSendInquiry} className="space-y-4">
                     <div>

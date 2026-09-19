@@ -70,7 +70,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     LinkedIn
                   </a>
@@ -80,7 +80,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     Twitter / X
                   </a>
@@ -90,7 +90,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.youtube}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     YouTube
                   </a>
@@ -100,7 +100,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     Facebook
                   </a>
@@ -110,7 +110,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     Instagram
                   </a>
@@ -120,7 +120,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-[#25D366]/20 hover:bg-[#25D366] hover:text-white rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-[#25D366]/20 hover:bg-[#25D366] hover:text-white rounded-[2px] transition-colors"
                   >
                     WhatsApp
                   </a>
@@ -130,7 +130,7 @@ export const SiteFooter: React.FC = () => {
                     href={settings.socials.tiktok}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-2.5 py-1 bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
+                    className="inline-flex items-center justify-center px-2.5 py-1 text-xs font-medium leading-none bg-white/10 hover:bg-[var(--color-accent-gold-400)] hover:text-[var(--color-ink-900)] rounded-[2px] transition-colors"
                   >
                     TikTok
                   </a>
@@ -262,36 +262,39 @@ export const SiteFooter: React.FC = () => {
               Stay Connected
             </h4>
             
-            <form onSubmit={handleNewsletter} className="space-y-2">
-              <label htmlFor="footer-newsletter" className="text-xs text-[var(--color-paper-100)] block">
+            <form onSubmit={handleNewsletter} className="space-y-2.5">
+              <label htmlFor="footer-newsletter" className="text-xs text-[var(--color-paper-100)] block font-medium leading-relaxed">
                 Receive journal essays and intake announcements.
               </label>
               {newsletterSubmitted ? (
-                <div className="p-2.5 bg-[var(--color-accent-green-700)] text-xs text-[var(--color-paper-50)] rounded-[2px]">
-                  Thank you. You are subscribed.
+                <div className="p-3 bg-[var(--color-accent-green-700)] text-xs text-[var(--color-paper-50)] rounded-[3px] flex items-center gap-2 border border-emerald-500/40">
+                  <span className="font-bold">✓</span>
+                  <span>Thank you. You are subscribed.</span>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2">
-                  <input
-                    id="footer-newsletter"
-                    type="email"
-                    required
-                    value={newsletterEmail}
-                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="w-full px-3 py-2 text-xs bg-white/10 border border-white/20 text-[var(--color-paper-50)] placeholder:text-white/40 focus:outline-none focus:border-[var(--color-accent-gold-400)] rounded-[2px]"
-                  />
+                <div className="space-y-2">
+                  <div className="relative">
+                    <input
+                      id="footer-newsletter"
+                      type="email"
+                      required
+                      value={newsletterEmail}
+                      onChange={(e) => setNewsletterEmail(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="w-full px-3.5 py-2.5 text-xs bg-white/10 border border-white/20 text-[var(--color-paper-50)] placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-[var(--color-accent-gold-400)] focus:border-[var(--color-accent-gold-400)] rounded-[3px] transition-all"
+                    />
+                  </div>
                   <button
                     type="submit"
-                    className="w-full py-2 px-3 text-xs font-semibold bg-[var(--color-accent-gold-400)] text-[var(--color-ink-900)] hover:bg-[var(--color-paper-50)] transition-colors rounded-[2px]"
+                    className="w-full py-2.5 px-4 text-xs font-bold uppercase tracking-wider bg-[var(--color-accent-gold-400)] text-[var(--color-ink-900)] hover:bg-white hover:text-[var(--color-brand-blue-900)] transition-colors rounded-[3px] shadow-xs active:translate-y-px"
                   >
-                    Subscribe
+                    Subscribe to Journal
                   </button>
                 </div>
               )}
             </form>
 
-            <div className="text-xs text-[var(--color-paper-100)] space-y-1 pt-2 opacity-80">
+            <div className="text-xs text-[var(--color-paper-100)] space-y-1 pt-2 opacity-80 leading-normal">
               <p>{settings.officeLocation}</p>
               <p>{settings.contactEmail}</p>
             </div>
@@ -308,7 +311,7 @@ export const SiteFooter: React.FC = () => {
             {BRAND_STRINGS.sisterOrgText}
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-5 text-center">
             <Link href="/privacy" className="hover:text-[var(--color-accent-gold-400)] underline">
               Privacy Policy
             </Link>

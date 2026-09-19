@@ -130,7 +130,10 @@ class DataStore {
             programs: parsed.programs?.length ? parsed.programs : initialDB.programs,
             events: parsed.events?.length ? parsed.events : initialDB.events,
             articles: parsed.articles?.length ? parsed.articles : initialDB.articles,
-            settings: parsed.settings || initialDB.settings
+            settings: {
+              ...initialDB.settings,
+              ...(parsed.settings || {})
+            }
           };
         } else {
           this.save();
@@ -149,13 +152,25 @@ class DataStore {
   }
 
   private notify() {
-    this.listeners.forEach((listener) => {
-      try {
-        listener();
-      } catch (e) {
-        console.error('Listener error in DataStore:', e);
-      }
-    });
+    if (typeof window !== 'undefined') {
+      queueMicrotask(() => {
+        this.listeners.forEach((listener) => {
+          try {
+            listener();
+          } catch (e) {
+            console.error('Listener error in DataStore:', e);
+          }
+        });
+      });
+    } else {
+      this.listeners.forEach((listener) => {
+        try {
+          listener();
+        } catch (e) {
+          console.error('Listener error in DataStore:', e);
+        }
+      });
+    }
   }
 
   private save() {
@@ -695,11 +710,19 @@ class DataStore {
     return this.state.mentors;
   }
 
+  getMentorById(id: string): Mentor | undefined {
+    return this.state.mentors.find(m => m.id === id);
+  }
+
   saveMentor(mentor: Partial<Mentor>): Mentor {
     if (mentor.id) {
       const idx = this.state.mentors.findIndex(m => m.id === mentor.id);
       if (idx !== -1) {
-        this.state.mentors[idx] = { ...this.state.mentors[idx], ...mentor } as Mentor;
+        this.state.mentors[idx] = { 
+          ...this.state.mentors[idx], 
+          ...mentor,
+          socialLinks: mentor.socialLinks || this.state.mentors[idx].socialLinks || []
+        } as Mentor;
         this.recordAudit('UPDATE_MENTOR', 'Mentor', mentor.id, `Updated mentor ${mentor.fullName}`);
         this.save();
         return this.state.mentors[idx];
@@ -718,6 +741,9 @@ class DataStore {
       consentGiven: true,
       status: mentor.status || 'published',
       photoUrl: mentor.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop',
+      linkedinUrl: mentor.linkedinUrl || '',
+      websiteUrl: mentor.websiteUrl || '',
+      socialLinks: mentor.socialLinks || [],
       ...mentor
     } as Mentor;
     this.state.mentors.unshift(newMentor);
@@ -810,6 +836,46 @@ class DataStore {
 
   getImpactStories(): ImpactStory[] {
     return this.state.impactStories.filter(s => s.status === 'published' && s.consentGiven);
+  }
+
+  getAllImpactStoriesAdmin(): ImpactStory[] {
+    return this.state.impactStories;
+  }
+
+  saveImpactStory(story: Partial<ImpactStory>): ImpactStory {
+    if (story.id) {
+      const idx = this.state.impactStories.findIndex(s => s.id === story.id);
+      if (idx !== -1) {
+        this.state.impactStories[idx] = { ...this.state.impactStories[idx], ...story } as ImpactStory;
+        this.recordAudit('UPDATE_IMPACT_STORY', 'ImpactStory', story.id, `Updated impact story of ${story.subjectName}`);
+        this.save();
+        return this.state.impactStories[idx];
+      }
+    }
+    const newStory: ImpactStory = {
+      id: 'imp-' + Math.random().toString(36).substring(2, 9),
+      slug: story.slug || (story.subjectName ? story.subjectName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'impact-story'),
+      subjectName: story.subjectName || 'Graduate Practitioner',
+      subjectRole: story.subjectRole || 'Social Enterprise Founder',
+      programName: story.programName || 'Executive Fellowship in Social Transformation',
+      narrative: story.narrative || 'Impact narrative.',
+      outcomeDescription: story.outcomeDescription || 'Measurable outcome.',
+      photoUrl: story.photoUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop',
+      consentGiven: true,
+      status: story.status || 'published',
+      publishedAt: new Date().toISOString(),
+      ...story
+    } as ImpactStory;
+    this.state.impactStories.unshift(newStory);
+    this.recordAudit('CREATE_IMPACT_STORY', 'ImpactStory', newStory.id, `Created impact story for ${newStory.subjectName}`);
+    this.save();
+    return newStory;
+  }
+
+  deleteImpactStory(id: string) {
+    this.state.impactStories = this.state.impactStories.filter(s => s.id !== id);
+    this.recordAudit('DELETE_IMPACT_STORY', 'ImpactStory', id, 'Deleted impact story');
+    this.save();
   }
 
   // Contact Enquiries

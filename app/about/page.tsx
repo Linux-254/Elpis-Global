@@ -1,17 +1,23 @@
-import type { Metadata } from 'next';
+'use client';
+
+import React, { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { SiteHeader } from '../../src/components/primitives/SiteHeader';
 import { SiteFooter } from '../../src/components/primitives/SiteFooter';
 import { Breadcrumbs } from '../../src/components/primitives/Breadcrumbs';
 import { SectionHeading } from '../../src/components/primitives/SectionHeading';
 import { BRAND_STRINGS } from '../../src/content/strings';
+import { dataStore } from '../../src/data/store';
+import { SEED_SETTINGS } from '../../src/data/seed';
 
-export const metadata: Metadata = {
-  title: 'About the School',
-  description: 'Learn about the founding mission, leadership, and four-pillar architecture of Zoe Elpis Global School.'
-};
+const subscribe = (cb: () => void) => dataStore.subscribe(cb);
+const getSettingsSnapshot = () => dataStore.getSettings();
+const getSettingsServerSnapshot = () => SEED_SETTINGS;
 
 export default function AboutPage() {
+  const settings = useSyncExternalStore(subscribe, getSettingsSnapshot, getSettingsServerSnapshot);
+  const storyImg = settings.aboutStoryPhotoUrl || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop';
+
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
@@ -39,7 +45,7 @@ export default function AboutPage() {
               </div>
               <div className="lg:col-span-5 aspect-[4/5] bg-[var(--color-paper-200)] overflow-hidden rounded-[2px] border border-[var(--color-paper-200)]">
                 <img
-                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop"
+                  src={storyImg}
                   alt="Training room session at Zoe Elpis Global School"
                   className="w-full h-full object-cover"
                 />

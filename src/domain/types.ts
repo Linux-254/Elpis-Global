@@ -146,6 +146,13 @@ export interface Facilitator {
 
 export type MentorAvailability = 'open' | 'limited' | 'closed';
 
+export interface MentorSocialLink {
+  id: string;
+  title: string;
+  url: string;
+  type: 'linkedin_article' | 'website' | 'linkedin_profile' | 'publication' | 'other';
+}
+
 export interface Mentor {
   id: string;
   userId?: string;
@@ -161,6 +168,9 @@ export interface Mentor {
   photoUrl?: string;
   consentGiven: boolean;
   status: ContentStatus;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+  socialLinks?: MentorSocialLink[];
 }
 
 export type MentorshipRequestStatus = 'submitted' | 'under_review' | 'matched' | 'declined' | 'closed';
@@ -514,6 +524,18 @@ export interface SiteSettings {
   officeLocation: string;
   officeHours: string;
   heroBgImageUrl?: string;
+  heroPhotoUrl?: string;
+  introPhotoUrl?: string;
+  introPhotoCaption?: string;
+  aboutStoryPhotoUrl?: string;
+  aboutLeadershipPhotoUrl?: string;
+  mentorshipBannerPhotoUrl?: string;
+  mentorshipCoverUrl?: string;
+  studentPortalBannerUrl?: string;
+  eventsCoverUrl?: string;
+  impactCoverUrl?: string;
+  impactBannerPhotoUrl?: string;
+  campusPhotoUrl?: string;
   announcementText?: string;
   announcementEnabled?: boolean;
   socials: {

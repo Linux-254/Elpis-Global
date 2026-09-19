@@ -601,7 +601,23 @@ export const SEED_MENTORS: Mentor[] = [
     availability: "open",
     consentGiven: true,
     status: "published",
-    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop"
+    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop",
+    linkedinUrl: "https://www.linkedin.com/in/emmanuel-ochieng-advisory",
+    websiteUrl: "https://ochiengadvisory.africa",
+    socialLinks: [
+      {
+        id: "lnk-1",
+        title: "Cash-Flow Diagnostics: Why 70% of Seed Ventures Fail in Year Two",
+        url: "https://www.linkedin.com/pulse/cash-flow-diagnostics-east-africa-emmanuel-ochieng",
+        type: "linkedin_article"
+      },
+      {
+        id: "lnk-2",
+        title: "Corporate Governance & Board Playbook for African Founders",
+        url: "https://ochiengadvisory.africa/publications/governance-playbook",
+        type: "website"
+      }
+    ]
   },
   {
     id: "mnt-2",
@@ -615,7 +631,23 @@ export const SEED_MENTORS: Mentor[] = [
     availability: "limited",
     consentGiven: true,
     status: "published",
-    photoUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=400&auto=format&fit=crop"
+    photoUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=400&auto=format&fit=crop",
+    linkedinUrl: "https://www.linkedin.com/in/dr-florence-wanjiku-impact",
+    websiteUrl: "https://florencewanjiku.org",
+    socialLinks: [
+      {
+        id: "lnk-3",
+        title: "Designing Robust Theories of Change in Community Health Programs",
+        url: "https://www.linkedin.com/pulse/theory-of-change-design-florence-wanjiku",
+        type: "linkedin_article"
+      },
+      {
+        id: "lnk-4",
+        title: "Impact Measurement & Evidence-Based Reporting Frameworks",
+        url: "https://florencewanjiku.org/research",
+        type: "website"
+      }
+    ]
   }
 ];
 
@@ -660,6 +692,18 @@ export const SEED_SETTINGS: SiteSettings = {
   officeLocation: "Global Digital Campus (Regional Hubs: Kampala, Uganda & Nairobi, Kenya)",
   officeHours: "Monday - Friday: 8:00 AM - 6:00 PM EAT (Online Support 24/7)",
   heroBgImageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop",
+  heroPhotoUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop",
+  introPhotoUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop",
+  introPhotoCaption: "Cohort 2025 Fellows collaborating during an executive strategy session.",
+  aboutStoryPhotoUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop",
+  aboutLeadershipPhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1200&auto=format&fit=crop",
+  mentorshipBannerPhotoUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop",
+  mentorshipCoverUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1200&auto=format&fit=crop",
+  studentPortalBannerUrl: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200&auto=format&fit=crop",
+  eventsCoverUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop",
+  impactCoverUrl: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=1200&auto=format&fit=crop",
+  impactBannerPhotoUrl: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=1200&auto=format&fit=crop",
+  campusPhotoUrl: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop",
   announcementText: "✨ Applications now open for the Upcoming 2026 Online Cohort. Flexible tuition payment plans available.",
   announcementEnabled: true,
   socials: {

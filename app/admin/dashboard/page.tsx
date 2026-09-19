@@ -27,7 +27,10 @@ import {
   GraduationCap,
   Sparkles,
   Image as ImageIcon,
-  Share2
+  Share2,
+  Globe,
+  Linkedin,
+  ExternalLink
 } from 'lucide-react';
 import {
   Program,
@@ -35,6 +38,7 @@ import {
   SchoolEvent,
   Article,
   Mentor,
+  MentorSocialLink,
   Faq,
   Certificate,
   SiteSettings,
@@ -45,13 +49,7 @@ import {
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    let user = dataStore.getCurrentUser();
-    if (!user || user.role !== 'admin') {
-      user = dataStore.login('admin@zegs.ac.ug') || dataStore.getCurrentUser();
-    }
-    return user;
-  });
+  const [currentUser, setCurrentUser] = useState<User | null>(() => dataStore.getCurrentUser());
   const [activeTab, setActiveTab] = useState<
     | 'overview'
     | 'programs'
@@ -973,17 +971,52 @@ export default function AdminDashboardPage() {
                         </span>
                       ))}
                     </div>
+
+                    {/* Social Media & Article Footprint indicators */}
+                    {(m.linkedinUrl || m.websiteUrl || (m.socialLinks && m.socialLinks.length > 0)) && (
+                      <div className="pt-2 border-t border-dashed border-[var(--color-paper-200)] flex flex-wrap items-center gap-1.5 text-[10px]">
+                        {m.linkedinUrl && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-[#0A66C2] rounded border border-blue-200 font-medium">
+                            <Linkedin size={10} />
+                            <span>LinkedIn</span>
+                          </span>
+                        )}
+                        {m.websiteUrl && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-200 font-medium">
+                            <Globe size={10} />
+                            <span>Website</span>
+                          </span>
+                        )}
+                        {m.socialLinks && m.socialLinks.length > 0 && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-[var(--color-paper-200)] text-[var(--color-ink-700)] rounded font-medium">
+                            <span>{m.socialLinks.length} {m.socialLinks.length === 1 ? 'Article' : 'Articles'}</span>
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-4 border-t border-[var(--color-paper-200)] mt-4 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => setEditingMentor({ ...m })}
-                      className="text-xs font-semibold text-[var(--color-brand-blue-800)] hover:underline flex items-center gap-1"
-                    >
-                      <Edit size={13} />
-                      <span>Edit</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setEditingMentor({ ...m })}
+                        className="text-xs font-semibold text-[var(--color-brand-blue-800)] hover:underline flex items-center gap-1"
+                      >
+                        <Edit size={13} />
+                        <span>Edit</span>
+                      </button>
+
+                      <Link
+                        href={`/mentorship/${m.id}`}
+                        target="_blank"
+                        className="text-xs text-[var(--color-ink-600)] hover:text-[var(--color-brand-blue-800)] flex items-center gap-1"
+                        title="View Public Profile"
+                      >
+                        <Eye size={13} />
+                        <span>Profile</span>
+                      </Link>
+                    </div>
 
                     <button
                       type="button"
@@ -1178,32 +1211,247 @@ export default function AdminDashboardPage() {
             </div>
 
             <form onSubmit={handleSaveSettings} className="space-y-6">
-              {/* Section 1: Hero & Visual Identity */}
-              <div className="space-y-4 pb-6 border-b border-[var(--color-paper-200)]">
-                <h3 className="font-display font-semibold text-base text-[var(--color-brand-blue-900)] flex items-center gap-2">
-                  <ImageIcon size={16} />
-                  <span>Hero Background & Visual Customization</span>
-                </h3>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--color-ink-800)] mb-1">
-                    Hero Background Image URL
-                  </label>
-                  <input
-                    type="url"
-                    value={settings.heroBgImageUrl || ''}
-                    onChange={(e) => setSettings({ ...settings, heroBgImageUrl: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full p-2.5 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
-                  />
-                  <p className="text-[11px] text-[var(--color-ink-500)] mt-1">
-                    This image will be set across hero sections. Recommended resolution: 1600x900.
-                  </p>
+              {/* Section 1: Visual Media & Website Photography Manager */}
+              <div className="space-y-6 pb-8 border-b border-[var(--color-paper-200)]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-semibold text-lg text-[var(--color-brand-blue-900)] flex items-center gap-2">
+                      <ImageIcon size={18} />
+                      <span>Website Imagery & Visual Assets Manager</span>
+                    </h3>
+                    <p className="text-xs text-[var(--color-ink-600)]">
+                      Change photographs, banners, and media featured across the home page, about page, portal, and events.
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider rounded-[2px] self-start sm:self-auto">
+                    Live CMS Controlled
+                  </span>
                 </div>
 
-                <div>
+                {/* Grid of Image Slots */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Slot 1: Hero Banner */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        1. Home Hero Background
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">1920×1080 Landscape</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.heroPhotoUrl || settings.heroBgImageUrl || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop'}
+                        alt="Hero preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.heroPhotoUrl || settings.heroBgImageUrl || ''}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            heroPhotoUrl: e.target.value,
+                            heroBgImageUrl: e.target.value
+                          })
+                        }
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, heroPhotoUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop', heroBgImageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Auditorium
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, heroPhotoUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1920&auto=format&fit=crop', heroBgImageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1920&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Executive Seminar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, heroPhotoUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1920&auto=format&fit=crop', heroBgImageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1920&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Collaboration Room
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slot 2: Institutional Introduction Photo */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        2. Institutional Overview Photo
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">4:5 Portrait on Homepage</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.introPhotoUrl || 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=800&auto=format&fit=crop'}
+                        alt="Intro preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.introPhotoUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, introPhotoUrl: e.target.value })}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, introPhotoUrl: 'https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=800&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Team Workshop
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, introPhotoUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Strategic Session
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slot 3: About Founding Story Photo */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        3. About Founding Story Photo
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">/about Page</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.aboutStoryPhotoUrl || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop'}
+                        alt="About story preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.aboutStoryPhotoUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, aboutStoryPhotoUrl: e.target.value })}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, aboutStoryPhotoUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Lecture Hall
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSettings({ ...settings, aboutStoryPhotoUrl: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=800&auto=format&fit=crop' })}
+                          className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                        >
+                          Academic Campus
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Slot 4: Mentorship Faculty Banner */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        4. Mentorship Banner
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">/mentorship Page</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.mentorshipCoverUrl || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop'}
+                        alt="Mentorship preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.mentorshipCoverUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, mentorshipCoverUrl: e.target.value })}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Slot 5: Student Portal Banner */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        5. Student Portal Banner
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">/student/dashboard</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.studentPortalBannerUrl || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800&auto=format&fit=crop'}
+                        alt="Portal preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.studentPortalBannerUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, studentPortalBannerUrl: e.target.value })}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Slot 6: Executive Masterclasses & Events Banner */}
+                  <div className="p-4 bg-[var(--color-paper-50)] border border-[var(--color-paper-300)] rounded-[2px] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--color-ink-900)]">
+                        6. Events & Masterclasses Cover
+                      </span>
+                      <span className="text-[10px] text-[var(--color-ink-500)]">/events Page</span>
+                    </div>
+                    <div className="aspect-[16/9] bg-[var(--color-paper-200)] rounded overflow-hidden border border-[var(--color-paper-300)]">
+                      <img
+                        src={settings.eventsCoverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop'}
+                        alt="Events preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="url"
+                        value={settings.eventsCoverUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, eventsCoverUrl: e.target.value })}
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Announcement Bar */}
+                <div className="pt-2">
                   <label className="block text-xs font-semibold text-[var(--color-ink-800)] mb-1">
-                    Global Announcement Bar Text
+                    Global Announcement Bar Text Notice
                   </label>
                   <input
                     type="text"
@@ -1955,12 +2203,17 @@ export default function AdminDashboardPage() {
 
       {/* MODAL: Edit / Add Mentor */}
       {editingMentor && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full p-6 sm:p-8 rounded-[2px] shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white max-w-lg w-full p-6 sm:p-8 rounded-[2px] shadow-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--color-paper-200)]">
-              <h3 className="font-display font-semibold text-lg text-[var(--color-ink-900)]">
-                {editingMentor.id ? 'Edit Mentor Profile' : 'Add Mentor Profile'}
-              </h3>
+              <div>
+                <h3 className="font-display font-semibold text-lg text-[var(--color-ink-900)]">
+                  {editingMentor.id ? 'Edit Mentor Profile' : 'Add Mentor Profile'}
+                </h3>
+                <p className="text-[11px] text-[var(--color-ink-500)]">
+                  Update faculty portrait, biographical credential, role, and domain expertise.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setEditingMentor(null)}
@@ -1971,6 +2224,63 @@ export default function AdminDashboardPage() {
             </div>
 
             <form onSubmit={handleSaveMentor} className="space-y-4 text-xs">
+              {/* Photo preview & URL field */}
+              <div className="p-3 bg-[var(--color-paper-100)] border border-[var(--color-paper-300)] rounded flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-[var(--color-paper-200)] border border-[var(--color-paper-300)] shrink-0">
+                  <img
+                    src={editingMentor.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop'}
+                    alt={editingMentor.fullName || 'Mentor Avatar'}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop';
+                    }}
+                  />
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  <label className="block font-semibold text-[var(--color-ink-900)]">
+                    Mentor Portrait / Photo URL
+                  </label>
+                  <input
+                    type="url"
+                    value={editingMentor.photoUrl || ''}
+                    onChange={(e) => setEditingMentor({ ...editingMentor, photoUrl: e.target.value })}
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                  />
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    <span className="text-[10px] text-[var(--color-ink-500)] self-center">Presets:</span>
+                    <button
+                      type="button"
+                      onClick={() => setEditingMentor({ ...editingMentor, photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop' })}
+                      className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                    >
+                      Executive 1
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingMentor({ ...editingMentor, photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop' })}
+                      className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                    >
+                      Executive 2
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingMentor({ ...editingMentor, photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop' })}
+                      className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                    >
+                      Executive 3
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingMentor({ ...editingMentor, photoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop' })}
+                      className="px-1.5 py-0.5 bg-white border border-[var(--color-paper-300)] text-[10px] rounded hover:bg-[var(--color-paper-200)]"
+                    >
+                      Executive 4
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block font-semibold text-[var(--color-ink-800)] mb-1">Full Name</label>
                 <input
@@ -1978,7 +2288,8 @@ export default function AdminDashboardPage() {
                   required
                   value={editingMentor.fullName || ''}
                   onChange={(e) => setEditingMentor({ ...editingMentor, fullName: e.target.value })}
-                  className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded"
+                  placeholder="e.g. Dr. Joyce Namusoke"
+                  className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
                 />
               </div>
 
@@ -1989,7 +2300,7 @@ export default function AdminDashboardPage() {
                     type="text"
                     value={editingMentor.role || 'Senior Strategic Advisor'}
                     onChange={(e) => setEditingMentor({ ...editingMentor, role: e.target.value })}
-                    className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded"
+                    className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
                   />
                 </div>
                 <div>
@@ -1998,9 +2309,27 @@ export default function AdminDashboardPage() {
                     type="text"
                     value={editingMentor.organisation || 'ZEGS Executive Faculty'}
                     onChange={(e) => setEditingMentor({ ...editingMentor, organisation: e.target.value })}
-                    className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded"
+                    className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-[var(--color-ink-800)] mb-1">
+                  Areas of Expertise (Comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={Array.isArray(editingMentor.expertise) ? editingMentor.expertise.join(', ') : ''}
+                  onChange={(e) =>
+                    setEditingMentor({
+                      ...editingMentor,
+                      expertise: e.target.value.split(',').map((s) => s.trim()).filter(Boolean)
+                    })
+                  }
+                  placeholder="e.g. Purpose Discovery, Commercial Strategy, Governance"
+                  className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                />
               </div>
 
               <div>
@@ -2009,23 +2338,181 @@ export default function AdminDashboardPage() {
                   rows={3}
                   value={editingMentor.biography || ''}
                   onChange={(e) => setEditingMentor({ ...editingMentor, biography: e.target.value })}
-                  className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded"
+                  placeholder="Summarize academic and executive track record..."
+                  className="w-full p-2.5 bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
                 />
+              </div>
+
+              {/* SOCIAL MEDIA PRESENCE & ARTICLES SECTION */}
+              <div className="pt-4 border-t border-[var(--color-paper-300)] space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-display font-semibold text-xs text-[var(--color-ink-900)] flex items-center gap-1.5">
+                      <Share2 size={14} className="text-[var(--color-brand-blue-800)]" />
+                      <span>Social Media Presence</span>
+                    </h4>
+                    <p className="text-[11px] text-[var(--color-ink-500)]">
+                      Configure verified profiles, personal websites, and specific LinkedIn articles or publications.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold text-[var(--color-ink-800)] mb-1 flex items-center gap-1">
+                      <Linkedin size={12} className="text-[#0A66C2]" />
+                      <span>LinkedIn Profile URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={editingMentor.linkedinUrl || ''}
+                      onChange={(e) => setEditingMentor({ ...editingMentor, linkedinUrl: e.target.value })}
+                      placeholder="https://www.linkedin.com/in/username"
+                      className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-[var(--color-ink-800)] mb-1 flex items-center gap-1">
+                      <Globe size={12} className="text-[var(--color-accent-gold-600)]" />
+                      <span>Personal Website / Portfolio</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={editingMentor.websiteUrl || ''}
+                      onChange={(e) => setEditingMentor({ ...editingMentor, websiteUrl: e.target.value })}
+                      placeholder="https://mentor-consulting.africa"
+                      className="w-full p-2 text-xs bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                    />
+                  </div>
+                </div>
+
+                {/* Dynamic Links: LinkedIn Articles, Publications & Personal Websites */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block font-semibold text-[var(--color-ink-800)] text-[11px] uppercase tracking-wider">
+                      LinkedIn Articles & Publication Links ({editingMentor.socialLinks?.length || 0})
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newLink: MentorSocialLink = {
+                          id: 'lnk-' + Math.random().toString(36).substring(2, 9),
+                          title: '',
+                          url: '',
+                          type: 'linkedin_article'
+                        };
+                        setEditingMentor({
+                          ...editingMentor,
+                          socialLinks: [...(editingMentor.socialLinks || []), newLink]
+                        });
+                      }}
+                      className="px-2.5 py-1 bg-[var(--color-brand-blue-50)] hover:bg-[var(--color-brand-blue-100)] text-[var(--color-brand-blue-900)] text-[11px] font-semibold rounded border border-[var(--color-brand-blue-200)] flex items-center gap-1 transition-colors"
+                    >
+                      <Plus size={12} />
+                      <span>Add Article / Link</span>
+                    </button>
+                  </div>
+
+                  {(!editingMentor.socialLinks || editingMentor.socialLinks.length === 0) ? (
+                    <div className="p-3 bg-[var(--color-paper-100)] border border-dashed border-[var(--color-paper-300)] rounded text-center text-[11px] text-[var(--color-ink-500)]">
+                      No specific LinkedIn articles or website links added yet. Click &quot;Add Article / Link&quot; to link mentor writings.
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                      {editingMentor.socialLinks.map((link, idx) => (
+                        <div
+                          key={link.id || idx}
+                          className="p-2.5 bg-[var(--color-paper-100)] border border-[var(--color-paper-300)] rounded space-y-2"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <select
+                              value={link.type || 'linkedin_article'}
+                              onChange={(e) => {
+                                const updated = [...(editingMentor.socialLinks || [])];
+                                updated[idx] = { ...updated[idx], type: e.target.value as any };
+                                setEditingMentor({ ...editingMentor, socialLinks: updated });
+                              }}
+                              className="p-1.5 text-[11px] bg-white border border-[var(--color-paper-300)] rounded font-medium text-[var(--color-ink-900)]"
+                            >
+                              <option value="linkedin_article">LinkedIn Article / Pulse</option>
+                              <option value="website">Personal Website / Blog</option>
+                              <option value="publication">Research / Whitepaper</option>
+                              <option value="linkedin_profile">LinkedIn Profile</option>
+                              <option value="other">Other Link</option>
+                            </select>
+
+                            <input
+                              type="text"
+                              required
+                              value={link.title}
+                              onChange={(e) => {
+                                const updated = [...(editingMentor.socialLinks || [])];
+                                updated[idx] = { ...updated[idx], title: e.target.value };
+                                setEditingMentor({ ...editingMentor, socialLinks: updated });
+                              }}
+                              placeholder="Title (e.g. Scaling African Ventures: Unit Economics)"
+                              className="flex-1 p-1.5 text-[11px] bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = (editingMentor.socialLinks || []).filter((_, i) => i !== idx);
+                                setEditingMentor({ ...editingMentor, socialLinks: updated });
+                              }}
+                              className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                              title="Remove article link"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="url"
+                              required
+                              value={link.url}
+                              onChange={(e) => {
+                                const updated = [...(editingMentor.socialLinks || [])];
+                                updated[idx] = { ...updated[idx], url: e.target.value };
+                                setEditingMentor({ ...editingMentor, socialLinks: updated });
+                              }}
+                              placeholder="https://www.linkedin.com/pulse/... or https://personal-domain.com"
+                              className="flex-1 p-1.5 text-[11px] bg-white border border-[var(--color-paper-300)] rounded focus:outline-none focus:border-[var(--color-brand-blue-800)]"
+                            />
+                            {link.url && (
+                              <a
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 bg-white border border-[var(--color-paper-300)] text-[10px] font-medium text-[var(--color-brand-blue-800)] hover:bg-[var(--color-paper-200)] rounded flex items-center gap-1 shrink-0"
+                              >
+                                <ExternalLink size={11} />
+                                <span>Test Link</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="pt-3 flex justify-end gap-2 border-t border-[var(--color-paper-200)]">
                 <button
                   type="button"
                   onClick={() => setEditingMentor(null)}
-                  className="py-2 px-4 bg-[var(--color-paper-200)] text-[var(--color-ink-800)] rounded font-semibold"
+                  className="py-2 px-4 bg-[var(--color-paper-200)] hover:bg-[var(--color-paper-300)] text-[var(--color-ink-800)] rounded font-semibold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="py-2 px-5 bg-[var(--color-brand-blue-900)] text-white rounded font-semibold"
+                  className="py-2 px-5 bg-[var(--color-brand-blue-900)] hover:bg-[var(--color-brand-blue-800)] text-white rounded font-semibold transition-colors"
                 >
-                  Save Mentor
+                  Save Mentor Profile
                 </button>
               </div>
             </form>

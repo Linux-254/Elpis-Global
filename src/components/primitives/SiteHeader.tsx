@@ -82,50 +82,62 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({ variant = 'solid' }) => 
       >
         {/* Row 1: Slim Utility Bar (collapses on scroll) */}
         {!scrolled && (
-          <div className="border-b border-white/10 text-xs py-2 px-4 sm:px-8">
-            <div className="max-w-[1320px] mx-auto flex items-center justify-between">
-              <span className="font-medium tracking-wide opacity-90">
-                Zoe Elpis Global School
-              </span>
-              <div className="flex items-center gap-5 sm:gap-7">
-                <Link href="/events" className="hover:text-[var(--color-accent-gold-400)] transition-colors">
-                  Events
-                </Link>
-                <Link href="/news" className="hover:text-[var(--color-accent-gold-400)] transition-colors">
-                  Journal
-                </Link>
-                <Link href="/contact" className="hover:text-[var(--color-accent-gold-400)] transition-colors">
-                  Contact
-                </Link>
+          <div className="border-b border-white/10 text-xs py-1.5 sm:py-2 px-3 sm:px-8">
+            <div className="max-w-[1320px] mx-auto flex items-center justify-between gap-2 sm:gap-4 min-w-0">
+              <div className="flex items-center gap-1.5 font-medium tracking-wide opacity-90 shrink-0">
+                <div className="w-3.5 h-3.5 text-[var(--color-accent-gold-400)] shrink-0 sm:hidden">
+                  <svg viewBox="0 0 64 64" fill="currentColor" className="w-full h-full">
+                    <path d="M32 6C30.5 12 25 17 25 24C25 29 28.5 32.5 32 35C35.5 32.5 39 29 39 24C39 17 33.5 12 32 6Z" />
+                    <path d="M30.5 36L29 54H35L33.5 36C33 36.2 32.5 36.3 32 36.3C31.5 36.3 31 36.2 30.5 36Z" />
+                  </svg>
+                </div>
+                <span className="sm:hidden font-bold tracking-wider text-[var(--color-paper-50)]">ZEGS</span>
+                <span className="hidden sm:inline">Zoe Elpis Global School</span>
+              </div>
 
-                <span className="h-3 w-[1px] bg-white/20 inline-block" aria-hidden="true" />
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6 shrink-0">
+                <div className="hidden md:flex items-center gap-4 sm:gap-6">
+                  <Link href="/events" className="inline-flex items-center leading-none text-xs text-[var(--color-paper-50)] hover:text-[var(--color-accent-gold-400)] transition-colors whitespace-nowrap">
+                    Events
+                  </Link>
+                  <Link href="/news" className="inline-flex items-center leading-none text-xs text-[var(--color-paper-50)] hover:text-[var(--color-accent-gold-400)] transition-colors whitespace-nowrap">
+                    Journal
+                  </Link>
+                  <Link href="/contact" className="inline-flex items-center leading-none text-xs text-[var(--color-paper-50)] hover:text-[var(--color-accent-gold-400)] transition-colors whitespace-nowrap">
+                    Contact
+                  </Link>
+
+                  <span className="h-3 w-[1px] bg-white/25 inline-block mx-0.5" aria-hidden="true" />
+                </div>
 
                 {currentUser ? (
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                     <Link
                       href="/student/dashboard"
-                      className="flex items-center gap-1.5 font-medium hover:text-[var(--color-accent-gold-400)]"
+                      className="inline-flex items-center gap-1.5 leading-none text-xs font-medium text-[var(--color-paper-50)] hover:text-[var(--color-accent-gold-400)] transition-colors whitespace-nowrap"
                     >
-                      <User size={13} aria-hidden="true" />
-                      <span>Student Portal</span>
+                      <User size={13} aria-hidden="true" className="shrink-0" />
+                      <span className="hidden sm:inline">Student Portal</span>
+                      <span className="sm:hidden">Portal</span>
                     </Link>
                     {currentUser.role === 'admin' && (
                       <Link
                         href="/admin/dashboard"
-                        className="flex items-center gap-1 text-[var(--color-accent-gold-400)] hover:underline font-semibold"
+                        className="inline-flex items-center gap-1 leading-none text-xs font-semibold text-[var(--color-accent-gold-400)] hover:text-white transition-colors whitespace-nowrap px-2 py-1 bg-white/10 hover:bg-white/20 rounded-[2px] border border-[var(--color-accent-gold-400)]/30 shrink-0"
                       >
-                        <Shield size={13} aria-hidden="true" />
-                        <span>Admin</span>
+                        <Shield size={12} aria-hidden="true" className="shrink-0 text-[var(--color-accent-gold-400)]" />
+                        <span className="whitespace-nowrap">Admin</span>
                       </Link>
                     )}
                   </div>
                 ) : (
                   <Link
                     href="/student/login"
-                    className="flex items-center gap-1 font-medium hover:text-[var(--color-accent-gold-400)] transition-colors"
+                    className="inline-flex items-center gap-1.5 leading-none text-xs font-medium text-[var(--color-paper-50)] hover:text-[var(--color-accent-gold-400)] transition-colors whitespace-nowrap px-2 py-1 bg-white/10 hover:bg-white/20 rounded-[2px] shrink-0"
                   >
-                    <User size={13} aria-hidden="true" />
-                    <span>Student Login</span>
+                    <User size={13} aria-hidden="true" className="shrink-0" />
+                    <span className="hidden sm:inline">Student Login</span>
+                    <span className="sm:hidden">Login</span>
                   </Link>
                 )}
               </div>
@@ -675,10 +687,11 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({ variant = 'solid' }) => 
                   {currentUser.role === 'admin' && (
                     <Link
                       href="/admin/dashboard"
-                      className="text-xs text-white/80 hover:text-white"
+                      className="inline-flex items-center gap-2 text-xs font-semibold text-[var(--color-accent-gold-400)] hover:text-white py-1"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Administrative CMS
+                      <Shield size={14} className="text-[var(--color-accent-gold-400)]" />
+                      <span>Admin CMS Dashboard</span>
                     </Link>
                   )}
                 </div>

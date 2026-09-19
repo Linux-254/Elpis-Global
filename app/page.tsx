@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { SiteHeader } from '../src/components/primitives/SiteHeader';
 import { SiteFooter } from '../src/components/primitives/SiteFooter';
@@ -10,15 +10,24 @@ import { SectionHeading } from '../src/components/primitives/SectionHeading';
 import { StatusBadge } from '../src/components/primitives/StatusBadge';
 import { BRAND_STRINGS } from '../src/content/strings';
 import { dataStore } from '../src/data/store';
+import { SEED_SETTINGS } from '../src/data/seed';
 import { ArrowRight, Calendar, BookOpen, Clock, Users, Sparkles, CheckCircle2 } from 'lucide-react';
 
+const subscribe = (cb: () => void) => dataStore.subscribe(cb);
+const getSettingsSnapshot = () => dataStore.getSettings();
+const getSettingsServerSnapshot = () => SEED_SETTINGS;
+
 export default function HomePage() {
+  const settings = useSyncExternalStore(subscribe, getSettingsSnapshot, getSettingsServerSnapshot);
   const schools = useMemo(() => dataStore.getSchools(), []);
   const featuredPrograms = useMemo(() => dataStore.getPrograms({ featuredOnly: true }), []);
   const upcomingEvents = useMemo(() => dataStore.getEvents('upcoming').slice(0, 3), []);
   const articles = useMemo(() => dataStore.getArticles().slice(0, 3), []);
   const impactStories = useMemo(() => dataStore.getImpactStories().slice(0, 1), []);
   const mentors = useMemo(() => dataStore.getMentors().slice(0, 2), []);
+
+  const heroBg = settings.heroPhotoUrl || settings.heroBgImageUrl || 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop';
+  const introImg = settings.introPhotoUrl || 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1000&auto=format&fit=crop';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -32,7 +41,7 @@ export default function HomePage() {
           <div
             className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1920&auto=format&fit=crop')`
+              backgroundImage: `url('${heroBg}')`
             }}
           />
           {/* Defined Single Permitted Scrim Gradient */}
@@ -141,7 +150,7 @@ export default function HomePage() {
               <div className="lg:col-span-5 relative">
                 <div className="relative aspect-[4/5] bg-[var(--color-paper-200)] overflow-hidden rounded-[2px] border border-[var(--color-paper-200)]">
                   <img
-                    src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?q=80&w=800&auto=format&fit=crop"
+                    src={introImg}
                     alt="Learners collaborating during a practical training session"
                     className="w-full h-full object-cover grayscale-[20%]"
                     loading="lazy"
@@ -212,7 +221,7 @@ export default function HomePage() {
                 <Link
                   key={school.id}
                   href={`/schools/${school.slug}`}
-                  className="group py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-[var(--color-paper-100)] -mx-4 sm:-mx-6 px-4 sm:px-6 transition-colors"
+                  className="group py-6 sm:py-8 px-3 sm:px-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-[var(--color-paper-100)] rounded-[2px] transition-colors"
                 >
                   <div className="lg:w-1/2">
                     <h3 className="font-display text-2xl sm:text-3xl text-[var(--color-ink-900)] group-hover:text-[var(--color-brand-blue-700)] group-hover:underline underline-offset-4 transition-colors">
